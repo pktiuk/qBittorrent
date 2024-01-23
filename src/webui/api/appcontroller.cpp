@@ -36,6 +36,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDirIterator>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -1081,6 +1082,25 @@ void AppController::setPreferencesAction()
 void AppController::defaultSavePathAction()
 {
     setResult(BitTorrent::Session::instance()->savePath().toString());
+}
+
+void AppController::getDirectoryAutocompletionAction()
+{
+    requireParams({u"path"_s});
+
+    const QString path = params().value(u"path"_s);
+    const QString dir = path.left(path.lastIndexOf(u'/'));
+
+    QDirIterator it(dir, QDir::Dirs | QDir::NoDotAndDotDot | QDir::CaseSensitive);
+    QStringList dirs;
+    while (it.hasNext())
+    {
+        const QString name = it.next();
+        if (name.startsWith(path, Qt::CaseSensitive))
+            dirs.append(name);
+    }
+
+    setResult(dirs);
 }
 
 void AppController::networkInterfaceListAction()
