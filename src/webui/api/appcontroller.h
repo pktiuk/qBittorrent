@@ -48,6 +48,7 @@ private slots:
     void preferencesAction();
     void setPreferencesAction();
     void defaultSavePathAction();
+    void getDirectoriesAction();
 
     void networkInterfaceListAction();
     void networkInterfaceAddressListAction();

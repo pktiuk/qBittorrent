@@ -36,6 +36,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -62,6 +63,7 @@
 #include "base/utils/password.h"
 #include "base/utils/string.h"
 #include "base/version.h"
+#include "apierror.h"
 #include "../webapplication.h"
 
 using namespace std::chrono_literals;
@@ -1081,6 +1083,24 @@ void AppController::setPreferencesAction()
 void AppController::defaultSavePathAction()
 {
     setResult(BitTorrent::Session::instance()->savePath().toString());
+}
+
+void AppController::getDirectoriesAction()
+{
+    requireParams({u"path"_s});
+
+    const QString path = params().value(u"path"_s);
+    if (path.isEmpty() || path.startsWith(u':'))
+        throw APIError(APIErrorType::BadParams);
+
+    const QDir dir {path};
+    if (!dir.isAbsolute())
+        throw APIError(APIErrorType::BadParams);
+    if (!dir.exists())
+        throw APIError(APIErrorType::NotFound);
+
+    const QStringList dirs = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    setResult(QJsonArray::fromStringList(dirs));
 }
 
 void AppController::networkInterfaceListAction()
