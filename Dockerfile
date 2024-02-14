@@ -52,3 +52,6 @@ WORKDIR /workspace/
 
 # RUN cmake -B build -DBOOST_ROOT=/workspace/boost -DCMAKE_BUILD_TYPE=Release
 
+#docker build --tag qbit .
+#xhost +local:
+#docker container run -it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY -v./:/workspace/qbittorrent qbit
