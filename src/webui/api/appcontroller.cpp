@@ -36,6 +36,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -62,6 +63,7 @@
 #include "base/utils/password.h"
 #include "base/utils/string.h"
 #include "base/version.h"
+#include "apierror.h"
 #include "../webapplication.h"
 
 using namespace std::chrono_literals;
@@ -1081,6 +1083,35 @@ void AppController::setPreferencesAction()
 void AppController::defaultSavePathAction()
 {
     setResult(BitTorrent::Session::instance()->savePath().toString());
+}
+
+void AppController::getDirectoryContentAction()
+{
+    requireParams({u"dirPath"_s});
+
+    const QString dirPath = params().value(u"dirPath"_s);
+    if (dirPath.isEmpty() || dirPath.startsWith(u':'))
+        throw APIError(APIErrorType::BadParams, u"Invalid directory path"_s);
+
+    const QDir dir {dirPath};
+    if (!dir.isAbsolute())
+        throw APIError(APIErrorType::BadParams, u"Invalid directory path"_s);
+    if (!dir.exists())
+        throw APIError(APIErrorType::NotFound, u"Directory does not exist"_s);
+
+    const QString visibility = params().value(u"mode"_s, u"all"_s);
+    QDir::Filters filters = QDir::NoDotAndDotDot;
+    if (visibility == u"dirs"_s)
+        filters |= QDir::Dirs;
+    else if (visibility == u"files"_s)
+        filters |= QDir::Files;
+    else if (visibility == u"all")
+        filters |= QDir::Dirs | QDir::Files;
+    else
+        throw APIError(APIErrorType::BadParams, u"Invalid mode, allowed values: all, dirs, files"_s);
+
+    const QStringList dirs = dir.entryList(filters);
+    setResult(QJsonArray::fromStringList(dirs));
 }
 
 void AppController::networkInterfaceListAction()
