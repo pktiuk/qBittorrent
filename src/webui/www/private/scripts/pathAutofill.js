@@ -74,23 +74,15 @@ window.qBittorrent.pathAutofill = (() => {
             .then(filesList => { showInputSuggestions(element, filesList) });
     }
 
-    async function handleDirSuggestions() {
-        showPathSuggestions(this, "dirs");
-    }
-
-    async function handleFilesSuggestions() {
-        showPathSuggestions(this, "all");
-    }
-
     // get all input text fields with class pathDirectory class="pathDirectory"
     function attachPathAutofill() {
         const directoryInputs = document.getElementsByClassName("pathDirectory");
         for (const input of directoryInputs)
-            input.addEventListener("input", handleDirSuggestions);
+            input.addEventListener("input", () => {showPathSuggestions(this, "dirs");});
         const fileInputs = document.getElementsByClassName("pathFile");
         for (let i = 0; i < fileInputs.length; i++) {
             //listen for typing events
-            fileInputs[i].addEventListener("input", handleFilesSuggestions);
+            fileInputs[i].addEventListener("input", () => {showPathSuggestions(this, "all");});
         }
     };
 
