@@ -51,7 +51,7 @@ window.qBittorrent.pathAutofill = (() => {
             datalist.appendChild(option);
         }
 
-        let oldDatalist = document.getElementById(inputElement.id + "Suggestions");
+        const oldDatalist = document.getElementById(inputElement.id + "Suggestions");
         if (oldDatalist !== null)
             oldDatalist.remove();
 
@@ -70,19 +70,19 @@ window.qBittorrent.pathAutofill = (() => {
         });
         fetch(filesListRequest)
             .then(response => response.text())
-            .then(text => { JSON.parse(text) })
-            .then(filesList => { showInputSuggestions(element, filesList) });
+            .then(text => { JSON.parse(text); })
+            .then(filesList => { showInputSuggestions(element, filesList); });
     }
 
     // get all input text fields with class pathDirectory class="pathDirectory"
     function attachPathAutofill() {
         const directoryInputs = document.getElementsByClassName("pathDirectory");
         for (const input of directoryInputs)
-            input.addEventListener("input", () => {showPathSuggestions(this, "dirs");});
+            input.addEventListener("input", () => { showPathSuggestions(this, "dirs"); });
         const fileInputs = document.getElementsByClassName("pathFile");
         for (let i = 0; i < fileInputs.length; i++) {
             //listen for typing events
-            fileInputs[i].addEventListener("input", () => {showPathSuggestions(this, "all");});
+            fileInputs[i].addEventListener("input", () => { showPathSuggestions(this, "all"); });
         }
     };
 
