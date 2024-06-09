@@ -36,28 +36,27 @@ if (window.qBittorrent === undefined)
 
 window.qBittorrent.pathAutofill = (() => {
 
-    const exports = function() {
+    const exports = () => {
         return {
             attachPathAutofill: attachPathAutofill
         };
     };
 
     function showInputSuggestions(inputElement, names) {
-        let datalist = document.getElementById(inputElement.id + "_suggestions");
-        if (datalist) {
-            datalist.innerHTML = "";
-        }
-        else {
-            datalist = document.createElement("datalist");
-            datalist.id = inputElement.id + "_suggestions";
-            inputElement.setAttribute("list", datalist.id);
-        }
-        inputElement.appendChild(datalist);
-        for (let i = 0; i < names.length; i++) {
+        const datalist = document.createElement("datalist");
+        datalist.id = inputElement.id + "Suggestions";
+        for (const name of names) {
             const option = document.createElement("option");
-            option.value = names[i];
+            option.value = name;
             datalist.appendChild(option);
         }
+
+        let oldDatalist = document.getElementById(inputElement.id + "Suggestions");
+        if (oldDatalist !== null)
+            oldDatalist.remove();
+        
+        inputElement.list = datalist.id;
+        inputElement.appendChild(datalist);
     }
 
     async function showPathSuggestions(element, mode) {
@@ -87,14 +86,12 @@ window.qBittorrent.pathAutofill = (() => {
         showPathSuggestions(this, "all");
     }
 
-    //get all input text fields with class path_directory class="path_directory"
+    // get all input text fields with class pathDirectory class="pathDirectory"
     function attachPathAutofill() {
-        const directoryInputs = document.getElementsByClassName("path_directory");
-        for (let i = 0; i < directoryInputs.length; i++) {
-            //listen for typing events
-            directoryInputs[i].addEventListener("input", handleDirSuggestions);
-        }
-        const fileInputs = document.getElementsByClassName("path_file");
+        const directoryInputs = document.getElementsByClassName("pathDirectory");
+        for (const input of directoryInputs)
+            input.addEventListener("input", handleDirSuggestions);
+        const fileInputs = document.getElementsByClassName("pathFile");
         for (let i = 0; i < fileInputs.length; i++) {
             //listen for typing events
             fileInputs[i].addEventListener("input", handleFilesSuggestions);
