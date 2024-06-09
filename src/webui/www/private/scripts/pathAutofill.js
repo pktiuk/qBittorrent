@@ -64,13 +64,8 @@ window.qBittorrent.pathAutofill = (() => {
         if (partialPath === "") {
             return;
         }
-        const filesListRequest = new Request({
-            url: "api/v2/app/getDirectoryContent?dirPath=" + partialPath + "&mode=" + mode,
-            method: "get"
-        });
-        fetch(filesListRequest)
-            .then(response => response.text())
-            .then(text => { JSON.parse(text); })
+        fetch("api/v2/app/getDirectoryContent?dirPath=" + partialPath + "&mode=" + mode)
+            .then(response => response.json())
             .then(filesList => { showInputSuggestions(element, filesList); });
     }
 
