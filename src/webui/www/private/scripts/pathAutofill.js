@@ -54,7 +54,7 @@ window.qBittorrent.pathAutofill = (() => {
         let oldDatalist = document.getElementById(inputElement.id + "Suggestions");
         if (oldDatalist !== null)
             oldDatalist.remove();
-        
+
         inputElement.list = datalist.id;
         inputElement.appendChild(datalist);
     }
@@ -68,14 +68,10 @@ window.qBittorrent.pathAutofill = (() => {
             url: "api/v2/app/getDirectoryContent?dirPath=" + partialPath + "&mode=" + mode,
             method: "get"
         });
-        try {
-            await filesListRequest.send();
-            const filesList = JSON.parse(filesListRequest.response.text);
-            showInputSuggestions(element, filesList);
-        }
-        catch (err) {
-            // directory does not exist
-        }
+        fetch(filesListRequest)
+            .then(response => response.text())
+            .then(text => { JSON.parse(text) })
+            .then(filesList => { showInputSuggestions(element, filesList) });
     }
 
     async function handleDirSuggestions() {
